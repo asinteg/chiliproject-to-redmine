@@ -1,5 +1,5 @@
-chiliproject-to-redmine
-=======================
+Chiliproject migtration to Redmine
+==================================
 
 Chiliproject to Redmine migration howto and resources
 
@@ -23,4 +23,5 @@ After the database migration the following issues occurred:
 Post-processing
 ---------------
 
-
+    UPDATE redmine_dev.journal_details SET value=null WHERE (prop_key = 'due_date' OR prop_key = 'start_date') AND (value = '*id001' OR value = '(unknown)');
+    UPDATE redmine_dev.journal_details SET value=replace(value, '&id001 ', '') WHERE (prop_key = 'due_date' OR prop_key = 'start_date') AND value like '&id001 %';
