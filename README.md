@@ -35,10 +35,10 @@ After the database migration the following problems occurred:
 
 For this guide the following file system structure is assumed:
 
-`/var/chiliproject/`
-`/var/redmine/`
-`/var/www/chiliproject/`  -> link to `/var/chiliproject/public/`
-`/var/www/redmine/`       -> link to `/var/redmine/public/`
+`/var/chiliproject/`  
+`/var/redmine/`  
+`/var/www/chiliproject/`  -> link to `/var/chiliproject/public/`  
+`/var/www/redmine/`       -> link to `/var/redmine/public/`  
 
 The Apache2 with mod passenger runs as user `www-data` and has DocumentRoot `/var/www/`.
 
@@ -48,25 +48,28 @@ To run the Java based **ChiliToRedmine** database migration tool, the openjdk-6-
 ## Migration Steps
 
 1. Stop the Apache2 server
-2. 2. Install Redmine 2.1.0 (or higher), 
-   for this guide we use the svn checkout to `/var/redmine-2.4/` and made a symlink to `/var/redmine/`
+2. 2. Install Redmine 2.1.0 (or higher),  
+   for this guide we use the svn checkout to `/var/redmine-2.4/` and made a symlink to `/var/redmine/`  
    and created the database `redmine` inside MySQL
-3. (for Redmine 2.1 only) Edit the Redmine Gemfile `/var/redmine/Gemfile` and change the section with `:mysql` to `:mysql2` because only `mysql2` runs flawlessly with Rails 3.x - otherwise you'll get errors during `rake db:migrate` etc.
-4. Edit the Redmine config `/var/redmine/config/database.yml` and change the databade backend from `mysql` to `mysql2` (same reasons/problems as mentioned in step 3) and create a copy named `database-migration.yml` where the database backend still is `mysql` (needed for the Java migration tool)
-5. Finish Redmine installation, change the Apache2 / passenger config from `/var/chiliproject/` to `/var/redmine/` etc. so now Apache2 runs Redmine instead of ChiliProject
+3. (for Redmine 2.1 only) Edit the Redmine Gemfile `/var/redmine/Gemfile`  
+   and change the section with `:mysql` to `:mysql2`, because only `mysql2` runs flawlessly with Rails 3.x -  
+   otherwise you'll get errors during `rake db:migrate` etc.
+4. Edit the Redmine config `/var/redmine/config/database.yml` and change the databade backend from `mysql` to `mysql2`  
+   (same reasons/problems as mentioned in step 3) and create a copy named `database-migration.yml` where the database backend still is `mysql` (needed for the Java migration tool)
+5. Finish Redmine installation, change the Apache2/passenger config from `/var/chiliproject/` to `/var/redmine/` etc. so now Apache2 runs Redmine instead of ChiliProject
 6. Start Apache2 and test the basic Redmine install, then stop Apache2 again
-7. Backup the ChiliProject database and create a sqldump:
+7. Backup the ChiliProject database and create a sqldump:  
    `mysqldump -u root -p chiliproject >/tmp/dbdump_chiliproject.sql`
-8. We had some issue descriptions containing some examples for UTF codes which broke the migration: `\xXX` - so we had to replace these invalid UTF codes e.g. by `XXX (UTF-8 Hex)` in all entried of table `journals` with:
+8. We had some issue descriptions containing some examples for UTF codes which broke the migration: `\xXX` - so we had to replace these invalid UTF codes e.g. by `XXX (UTF-8 Hex)` in all entried of table `journals` with:  
    `perl -i -pe 's/\XXX (UTF-8 Hex)/XXX (UTF-8 Hex)/g' dump.sql`
-9. Replace all `/chiliproject/` urls to `/redmine/` inside the database dump with:
+9. Replace all `/chiliproject/` urls to `/redmine/` inside the database dump with:  
    `perl -i -pe 's/\/chiliproject\//\/redmine\//g' /tmp/dbdump_chiliproject.sql`
 10. Ensure that your Redmine installation still works and has default data loaded (see Redmine install howtos)
-11. Import the `/tmp/dbdump_chiliproject.sql` into the redmine database, e.g. by executing these commands inside MySQL:
-   `USE redmine; SOURCE /tmp/dbdump_chiliproject.sql`
-   and run the Redmine database migration:
+11. Import the `/tmp/dbdump_chiliproject.sql` into the redmine database, e.g. by executing these commands inside MySQL:  
+   `USE redmine; SOURCE /tmp/dbdump_chiliproject.sql`  
+   and run the Redmine database migration:  
    `rake db:migrate RAILS_ENV=production`
-12. Run the SQL commands described in the [Chili-to-Redmine guide][https://docs.google.com/document/d/1SPypGY_cBjeXmpDXjFVkrla3a8CsWpps0qIgj-VYJds/]:
+12. Run the SQL commands described in the [Chili-to-Redmine guide][https://docs.google.com/document/d/1SPypGY_cBjeXmpDXjFVkrla3a8CsWpps0qIgj-VYJds/]:  
         ALTER TABLE wiki_contents ADD comments VARCHAR(250) NULL, CHANGE COLUMN lock_version version INTEGER(11);
         
         ALTER TABLE journals
@@ -90,15 +93,21 @@ To run the Java based **ChiliToRedmine** database migration tool, the openjdk-6-
         ALTER TABLE auth_sources
             CHANGE COLUMN custom_filter filter VARCHAR(255) NULL DEFAULT NULL,
             ADD COLUMN `timeout` INT(11) NULL DEFAULT NULL;
-12. Change into `/var/redmine` dir and execute the Java database migration tool ChiliToRedmine from https://docs.google.com/file/d/0B2rCUFhTgJxARkhYNkNMOTVuNUE/edit?pli=1
+12. Change into `/var/redmine` dir and execute the Java database migration tool ChiliToRedmine from https://docs.google.com/file/d/0B2rCUFhTgJxARkhYNkNMOTVuNUE/edit?pli=1  
     `java -jar ChiliToRedmine.jar config/database-migration.yml`
-13. Fix conversion issues of the migration tool by running the sql command:
+13. Fix conversion issues of the migration tool by running the sql command:  
     `UPDATE journal_details SET value='' WHERE value='(undefined)';`
-14. Delete the new table `changes_parents` by:
-   `DROP TABLE changes_parents;`
+14. Delete the new table `changes_parents` by:  
+   `DROP TABLE changes_parents;`  
     otherwise you'll get errors running the database migration
-15. Fix bad date anchor fields from Chili not supported in Redmine:
+15. Fix bad date anchor fields from Chili not supported in Redmine:  
         UPDATE redmine_dev.journal_details SET value=null WHERE (prop_key = 'due_date' OR prop_key = 'start_date') AND (value = '*id001' OR value = '(unknown)');
         UPDATE redmine_dev.journal_details SET value=replace(value, '&id001 ', '') WHERE (prop_key = 'due_date' OR prop_key = 'start_date') AND value like '&id001 %';
 16. Change owner of `/var/redmine/` to `www-data`
 17. Start Apache2 and test Redmine
+
+## Plugins
+
+Due to the fact that ChiliProject still uses Rails 2.x usually all plugins won't work in Redmine - you have to download/install newer versions of them or port them to Rails 3.x.
+
+For Redmine 2.x all plugins now reside in `/var/redmine/plugins/` and not any more in `../vendor/plugins/` like in ChiliProject.
