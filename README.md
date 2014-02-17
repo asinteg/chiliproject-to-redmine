@@ -69,7 +69,8 @@ To run the Java based **ChiliToRedmine** database migration tool, the openjdk-6-
    `USE redmine; SOURCE /tmp/dbdump_chiliproject.sql`  
    and run the Redmine database migration:  
    `rake db:migrate RAILS_ENV=production`
-12. Run the SQL commands described in the [Chili-to-Redmine guide][https://docs.google.com/document/d/1SPypGY_cBjeXmpDXjFVkrla3a8CsWpps0qIgj-VYJds/]:  
+12. Run the SQL commands described in the *[Chili-to-Redmine guide](https://docs.google.com/document/d/1SPypGY_cBjeXmpDXjFVkrla3a8CsWpps0qIgj-VYJds/)*:  
+  
         ALTER TABLE wiki_contents ADD comments VARCHAR(250) NULL, CHANGE COLUMN lock_version version INTEGER(11);
         
         ALTER TABLE journals
@@ -93,7 +94,7 @@ To run the Java based **ChiliToRedmine** database migration tool, the openjdk-6-
         ALTER TABLE auth_sources
             CHANGE COLUMN custom_filter filter VARCHAR(255) NULL DEFAULT NULL,
             ADD COLUMN `timeout` INT(11) NULL DEFAULT NULL;
-12. Change into `/var/redmine` dir and execute the Java database migration tool ChiliToRedmine from https://docs.google.com/file/d/0B2rCUFhTgJxARkhYNkNMOTVuNUE/edit?pli=1  
+12. Change into `/var/redmine` dir and execute the Java database migration tool *[ChiliToRedmine](https://docs.google.com/file/d/0B2rCUFhTgJxARkhYNkNMOTVuNUE/edit?pli=1)*:  
     `java -jar ChiliToRedmine.jar config/database-migration.yml`
 13. Fix conversion issues of the migration tool by running the sql command:  
     `UPDATE journal_details SET value='' WHERE value='(undefined)';`
@@ -101,6 +102,7 @@ To run the Java based **ChiliToRedmine** database migration tool, the openjdk-6-
    `DROP TABLE changes_parents;`  
     otherwise you'll get errors running the database migration
 15. Fix bad date anchor fields from Chili not supported in Redmine:  
+  
         UPDATE redmine_dev.journal_details SET value=null WHERE (prop_key = 'due_date' OR prop_key = 'start_date') AND (value = '*id001' OR value = '(unknown)');
         UPDATE redmine_dev.journal_details SET value=replace(value, '&id001 ', '') WHERE (prop_key = 'due_date' OR prop_key = 'start_date') AND value like '&id001 %';
 16. Change owner of `/var/redmine/` to `www-data`
