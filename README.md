@@ -1,6 +1,6 @@
-# Chiliproject migtration to Redmine
+# Chiliproject migration to Redmine
 
-Chiliproject to Redmine migration howto and resources.
+ChiliProject to Redmine migration howto and resources by Christian Daehn (c) ASinteg GmbH.
 
 Source system:
 *  Ruby 1.8.7 + Rails 3.2.16
@@ -122,3 +122,9 @@ But: We can't give any guarantee that it works - but it should do (in theory) ;-
 Due to the fact that ChiliProject still uses Rails 2.x usually all plugins won't work in Redmine - you have to download/install newer versions of them or port them to Rails 3.x.
 
 For Redmine 2.x all plugins now reside in `/var/redmine/plugins/` and not any more in `../vendor/plugins/` like in ChiliProject.
+
+## Copyright
+
+Christian Daehn (c) ASinteg GmbH, Schwerin (Germany) 2014
+
+You are free to modify & distribute this document under the MIT license.
