@@ -45,10 +45,19 @@ The Apache2 with mod passenger runs as user `www-data` and has DocumentRoot `/va
 To run the Java based **ChiliToRedmine** database migration tool, the openjdk-6-jre is needed under Debian - for other OS any Java JRE of version 6 or higher is needed.
 
 
+## Redmine 2.1 or 2.4 ???
+
+We strictly followed the *[Chili-to-Redmine guide](https://docs.google.com/document/d/1SPypGY_cBjeXmpDXjFVkrla3a8CsWpps0qIgj-VYJds/)* and used Redmine 2.1.0 and after the migration updated to Redmine 2.4.1 - which worked without erros.
+
+But Redmine 2.1 has some issues with the `mysql` backend - because in Rails 3.x this backend is `mysql2`. So if you use Redmine 2.4, there all database and Gemfile entries already use `mysql2` as database backend and you don't have to struggle with manually editing database.yml and the Gemfile.
+
+But: We can't give any guarantee that it works - but it should do (in theory) ;-)
+
+
 ## Migration Steps
 
 1. Stop the Apache2 server
-2. 2. Install Redmine 2.1.0 (or higher),  
+2. Install Redmine 2.1.0 (or higher),  
    for this guide we use the svn checkout to `/var/redmine-2.4/` and made a symlink to `/var/redmine/`  
    and created the database `redmine` inside MySQL
 3. (for Redmine 2.1 only) Edit the Redmine Gemfile `/var/redmine/Gemfile`  
