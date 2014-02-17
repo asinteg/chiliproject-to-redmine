@@ -30,6 +30,8 @@ After the database migration the following problems occurred:
 *  plugins broke (ChiliProject uses Rails 2.x, but Redmine 2.1 Rails 3.x)
 *  themes broke (CSS ids changed and CP menu structure is incompatible to Redmine)
 
+Further: The wiki history couldn't be migrated the Java tool - so all wiki histories are gone.
+
 
 ## Preparation Steps
 
