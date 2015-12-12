@@ -21,7 +21,7 @@ To migrate from ChiliProject 3.x back to Redmine 2.1 we used the guide provided 
 But we faced with several problems which can be solved with this howto and resources provided here.
 
 *Update:* There's a new Ruby script, which seems to do the same sql database migration task as the Java tool chili-to-redmine:
-https://gist.github.com/pallan/6663018
+https://gist.github.com/pille/603702cbb8422cc4244c
 
 ## Problems
 
